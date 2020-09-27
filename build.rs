@@ -7,6 +7,7 @@ use std::env;
 
 fn main() {
     let out_path = std::path::PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    let manifest_dir = std::path::PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
 
     let include_paths = match (
         pkg_config::Config::new().exactly_version("5.0").probe("assimp"),
@@ -77,8 +78,14 @@ fn main() {
             println!("cargo:rustc-link-lib=static=IrrXML{}", debug_postfix);
 
             vec![
-                "assimp/include".to_string(),
-                "assimp/contrib/irrXML".to_string(),
+                manifest_dir.join("assimp").join("include").into_os_string().into_string().unwrap(),
+                manifest_dir
+                    .join("assimp")
+                    .join("contrib")
+                    .join("irrXML")
+                    .into_os_string()
+                    .into_string()
+                    .unwrap(),
                 out_path.join("include").into_os_string().into_string().unwrap(),
             ]
         }
