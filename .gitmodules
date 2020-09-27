@@ -1,6 +1,6 @@
 [submodule "assimp"]
 	path = assimp
-	url = git@github.com:assimp/assimp.git
+	url = git@github.com:waych/assimp.git
 [submodule "zlib"]
 	path = zlib
 	url = git@github.com:madler/zlib.git
