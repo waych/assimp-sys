@@ -83,12 +83,13 @@ fn main() {
         }
     };
 
-    let minizip = pkg_config::probe_library("minizip").unwrap();
-    for path in minizip.link_paths {
-        println!("cargo:rustc-link-path={}", path.to_str().unwrap());
-    }
-    for lib in minizip.libs {
-        println!("cargo:rustc-link-lib={}", lib);
+    if let Ok(minizip) = pkg_config::probe_library("minizip") {
+        for path in minizip.link_paths {
+            println!("cargo:rustc-link-path={}", path.to_str().unwrap());
+        }
+        for lib in minizip.libs {
+            println!("cargo:rustc-link-lib={}", lib);
+        }
     }
 
     // Link to libstdc++ on GNU
