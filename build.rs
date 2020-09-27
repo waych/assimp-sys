@@ -6,10 +6,10 @@ use cmake::Config;
 use std::env;
 
 fn main() {
+    let out_path = std::path::PathBuf::from(env::var_os("OUT_DIR").unwrap());
+
     let include_paths = match (
-        pkg_config::Config::new()
-            .exactly_version("5.0")
-            .probe("assimp"),
+        pkg_config::Config::new().exactly_version("5.0").probe("assimp"),
         pkg_config::probe_library("IrrXML"),
     ) {
         (Ok(assimp), Ok(irrxml)) => {
@@ -79,6 +79,7 @@ fn main() {
             vec![
                 "assimp/include".to_string(),
                 "assimp/contrib/irrXML".to_string(),
+                out_path.join("include").into_os_string().into_string().unwrap(),
             ]
         }
     };
@@ -121,11 +122,8 @@ fn main() {
 
     let bindings = bindings.generate().expect("Unable to generate bindings");
 
-    let out_path = std::path::PathBuf::from(env::var_os("OUT_DIR").unwrap());
     let bindings_path = out_path.join("bindings.rs");
-    bindings
-        .write_to_file(&bindings_path)
-        .expect("Couldn't write bindings");
+    bindings.write_to_file(&bindings_path).expect("Couldn't write bindings");
 
     println!("cargo:rerun-if-changed=build.rs");
 }
