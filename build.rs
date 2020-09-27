@@ -124,7 +124,7 @@ fn main() {
         .derive_debug(true);
 
     for path in include_paths {
-        bindings = bindings.clang_args(&["-F", &path]);
+        bindings = bindings.clang_args(&["-I", &path]);
     }
 
     let bindings = bindings.generate().expect("Unable to generate bindings");
