@@ -1,6 +1,7 @@
 extern crate bindgen;
 extern crate cmake;
 extern crate pkg_config;
+extern crate walkdir;
 
 use cmake::Config;
 use std::env;
@@ -9,8 +10,7 @@ fn main() {
     let out_path = std::path::PathBuf::from(env::var_os("OUT_DIR").unwrap());
     let manifest_dir = std::path::PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
 
-    let include_paths = match pkg_config::Config::new().exactly_version("5.0").probe("assimp")
-    {
+    let include_paths = match pkg_config::Config::new().exactly_version("5.0").probe("assimp") {
         Ok(assimp) => {
             for path in assimp.link_paths {
                 println!("cargo:rustc-link-path={}", path.to_str().unwrap());
@@ -91,6 +91,17 @@ fn main() {
     }
 
     println!("cargo:rerun-if-changed=wrapper.h");
+
+    // Tell cargo we really want to rebuild if the main sources changed.
+    for dirent in walkdir::WalkDir::new("assimp").min_depth(1) {
+        let dirent = dirent.unwrap();
+        let filename = dirent.file_name();
+        let filename = filename.to_str().unwrap();
+        if filename.ends_with(".h") || filename.ends_with(".cpp") || filename.ends_with(".inl") {
+
+            println!("cargo:rerun-if-changed={}", dirent.path().to_str().unwrap());
+        }
+    };
 
     let mut bindings = bindgen::Builder::default()
         .header("wrapper.h")
