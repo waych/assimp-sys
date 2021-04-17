@@ -18,4 +18,8 @@ libz-sys = "1.0"
 bindgen = "0.55"
 cmake = "0.1"
 pkg-config = "0.3"
+vcpkg = { version = "0.2.12", optional = true }
 walkdir = "2.3"
+
+[features]
+use-vcpkg = ["vcpkg"]
