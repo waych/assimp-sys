@@ -29,6 +29,7 @@ fn main() {
             // Compile assimp from source
             // Disable unnecessary stuff, it takes long enough to compile already
             let dst = Config::new("assimp")
+                .profile("Release")
                 .define("ASSIMP_BUILD_ASSIMP_TOOLS", "OFF")
                 .define("ASSIMP_BUILD_TESTS", "OFF")
                 .define("ASSIMP_INSTALL_PDB", "OFF")
@@ -54,15 +55,16 @@ fn main() {
 
             // There's no way to extract this from `cmake::Config` so we have to emulate their
             // behaviour here (see the source for `cmake::Config::build`).
-            let debug_postfix = match (
-                &env::var("OPT_LEVEL").unwrap_or_default()[..],
-                &env::var("PROFILE").unwrap_or_default()[..],
-            ) {
-                ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
-                ("0", _) => "d",
-                (_, "debug") => "d",
-                (_, _) => "",
-            };
+            // let debug_postfix = match (
+            //     &env::var("OPT_LEVEL").unwrap_or_default()[..],
+            //     &env::var("PROFILE").unwrap_or_default()[..],
+            // ) {
+            //     ("1", _) | ("2", _) | ("3", _) | ("s", _) | ("z", _) => "",
+            //     ("0", _) => "d",
+            //     (_, "debug") => "d",
+            //     (_, _) => "",
+            // };
+            let debug_postfix = "";
 
             println!("cargo:rustc-link-lib=static=assimp{}", debug_postfix);
 
